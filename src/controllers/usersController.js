@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import users from "../models/Users.js";
 import { environment } from "../../environment/env.js";
 import { validateField } from "../utils/validate-field.js";
-
+"Desenvolvi um backend que faz conexão com o banco de dados mongodb usando javascript e express. Estou fazendo o deploy no vercel com o auxílio do arquivo vercel.json mas está exibindo uma mensagem de not found quando acesso o link resultando do deploy no vercel. A pasta raiz do projeto se chama api e a pasta que armazena todos os arquivos javascript estão na pasta chamada src. Os arquivos package.json e package-lock.json estão na pasta raiz do projeto, junto com o arquivo vercel.json. O que devo fazer para que a api funcione para receber e devolver requisições feitas usando o deploy na vercel? O problema está no arquivo vercel.json? Ou na estrutura das minhas pastas e arquivos?"
 const secret = environment.SECRET_KEY;
 
 class UsersController {
