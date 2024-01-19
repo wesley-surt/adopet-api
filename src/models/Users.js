@@ -6,6 +6,7 @@ const userSchema = mongoose.Schema({
     name: { type: String, required: true },
     telephone: { type: String },
     photo: { type: String },
+    imAnNGO: { type: Boolean, require: true },
     city: { type: String },
     state: { type: String },
     about: { type: String },

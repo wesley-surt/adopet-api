@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import users from "../models/Users.js";
 import { environment } from "../../environment/env.js";
 import { validateField } from "../utils/validate-field.js";
-"Desenvolvi um backend que faz conexão com o banco de dados mongodb usando javascript e express. Estou fazendo o deploy no vercel com o auxílio do arquivo vercel.json mas está exibindo uma mensagem de not found quando acesso o link resultando do deploy no vercel. A pasta raiz do projeto se chama api e a pasta que armazena todos os arquivos javascript estão na pasta chamada src. Os arquivos package.json e package-lock.json estão na pasta raiz do projeto, junto com o arquivo vercel.json. O que devo fazer para que a api funcione para receber e devolver requisições feitas usando o deploy na vercel? O problema está no arquivo vercel.json? Ou na estrutura das minhas pastas e arquivos?"
+
 const secret = environment.SECRET_KEY;
 
 class UsersController {
@@ -40,21 +40,23 @@ class UsersController {
 
     static register = async (req, res) => {
         const {
-            email,
-            name,
-            password,
             confirmPassword,
+            telephone,
+            password,
+            imAnNGO,
             about,
             state,
-            city,
             photo,
-            telephone,
+            email,
+            city,
+            name,
             cep,
         } = req.body;
 
         validateField(email, `Email is required - ${email}`, res);
         validateField(name, `ERROR: Name is required - ${name}`, res);
-        validateField(name, `ERROR: Cep is required - ${name}`, res);
+        validateField(cep, `ERROR: Cep is required - ${name}`, res);
+        validateField(imAnNGO, `ERROR: "Im an NGO" is required - ${name}`, res);
         validateField(
             password,
             `ERROR: Password is required - ${password}`,
@@ -80,14 +82,15 @@ class UsersController {
         const passwordHash = await bcrypt.hash(password, salt);
 
         const user = new users({
-            email,
-            name,
             password: passwordHash,
-            about,
-            state,
-            city,
-            photo,
             telephone,
+            imAnNGO,
+            about,
+            email,
+            state,
+            photo,
+            name,
+            city,
             cep,
         });
 
@@ -109,12 +112,12 @@ class UsersController {
             users.findByIdAndUpdate(
                 id,
                 {
-                    photo,
-                    name,
-                    city,
-                    about,
                     telephone,
+                    about,
                     state,
+                    photo,
+                    city,
+                    name,
                     cep,
                 },
                 { new: true, select: "-password" },
