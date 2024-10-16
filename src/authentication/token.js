@@ -3,7 +3,7 @@ import { environment } from '../../environment/env.js';
 
 const secret = environment.SECRET_KEY ;
 
-export default function checkTonken (req, res, next) {
+export default function checkToken (req, res, next) {
   const authHeader = req.header('x-access-token');
   const token = authHeader;
   // const token = authHeader && authHeader.split(' ')[1];
