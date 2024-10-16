@@ -69,6 +69,7 @@ export class AnimalsController {
             characteristics1,
             characteristics2,
             measure,
+            status,
             photo,
             about,
             state,
@@ -82,6 +83,7 @@ export class AnimalsController {
         validateField(characteristics1, "Characteristics1 is required", res);
         validateField(characteristics2, "Characteristics2 is required", res);
         validateField(measure, "Measure is required", res);
+        validateField(status, "Status is required", res);
         validateField(userId, "UserId is required", res);
         validateField(photo, "Photo is required", res);
         validateField(state, "State is required", res);
@@ -95,13 +97,14 @@ export class AnimalsController {
             characteristics1: characteristics1,
             characteristics2: characteristics2,
             measure: measure,
+            status: status,
             userId: userId,
             photo: photo,
             state: state,
             about: about,
+            city: city,
             name: name,
             size: size,
-            city: city,
             age: age,
             cep: cep,
         });
