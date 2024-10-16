@@ -8,6 +8,13 @@ import { validateField } from "../utils/validate-field.js";
 const secret = environment.SECRET_KEY;
 
 class UsersController {
+    static teste = async (req, res, next) => {
+        //const { email, password } = req.body;
+        res.status(200).json({ message: "Teste bem sucedido"});
+        return next();
+        //, json: {email, password}
+    }
+
     static login = async (req, res, next) => {
         const { email, password } = req.body;
 

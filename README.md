@@ -1,1 +1,1 @@
-Endpoint da api na vercel: https://adopet-api-eight.vercel.app/
+Endpoint raiz da api na vercel: https://adopet-api-cybz.vercel.app/

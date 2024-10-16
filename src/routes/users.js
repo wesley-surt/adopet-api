@@ -5,6 +5,7 @@ import checkTonken from "../authentication/token.js";
 const router = express.Router();
 
 router
+    .get("/users", UsersController.teste)
     .get("/users/:id", checkTonken, UsersController.return)
     .post("/users/exists", UsersController.exists)
     .post("/users/login", UsersController.login)
