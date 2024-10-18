@@ -14,29 +14,38 @@ class UsersController {
         validateField(email, `Email is required - ${email}`, res);
         validateField(password, `Password is required - ${password}`, res);
 
-        const user = await users.findOne({ email: email });
-        if (user) await bcrypt.compare(password, user.password);
+        let passwordValidit = false;
 
-        try {
-            const userId = user._id;
-            const token = jwt.sign(
-                {
-                    id: user.id,
-                },
-                secret
-            );
-            if (user) {
-                res.status(200).json({ token, userId });
+        const user = await users.findOne({ email: email });
+        if (user) {
+            passwordValidit = await bcrypt.compare(password, user.password)
+            
+            if(!passwordValidit)
+                res.status(400).json({Error: "Incorrect password"});
+        } else {
+            res.status(400).json({Error: "User not found"});
+        };
+
+            try {
+                const userId = user._id;
+                const token = jwt.sign(
+                    {
+                        id: user.id,
+                    },
+                    secret
+                );
+                if (user) {
+                    res.status(200).json({ token, userId });
+                    return next();
+                }
+
+                res.status(500).json({ message: "User not find." });
+                return next();
+            } catch (err) {
+                res.status(500).json({ message: "Server error. Try again later" });
                 return next();
             }
-
-            res.status(500).json({ message: "User not find." });
-            return next();
-        } catch (err) {
-            res.status(500).json({ message: "Server error. Try again later" });
-            return next();
-        }
-    };
+        };
 
     static register = async (req, res) => {
         const {
@@ -70,11 +79,14 @@ class UsersController {
 
         const userExists = await users
             .findOne({ email: email })
-            .then()
-            .catch((err) => {
+            .then(
                 res.status(400).json({
-                    message: `ERROR: Please, use another email - ${userExists}`,
-                    error: err.message,
+                    Email_exists: "ERROR: Please, use another email",
+                })
+            )
+            .catch((err) => {
+                res.status(500).json({
+                    error: err.message
                 });
             });
 
@@ -100,7 +112,7 @@ class UsersController {
             if (result) return res.status(200).json(result);
             else throw new Error(err);
         } catch (err) {
-            res.status(200).json({ error: err.message });
+            res.status(500).json({ error: err.message });
         }
     };
 
