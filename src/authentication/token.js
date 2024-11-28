@@ -4,13 +4,16 @@ import { environment } from '../../environment/env.js';
 const secret = environment.SECRET_KEY ;
 
 export default function checkToken (req, res, next) {
-  const authHeader = req.header('x-access-token');
-  const token = authHeader;
-  // const token = authHeader && authHeader.split(' ')[1];
+  
+  const authToken = req.headers['authorization'];
+  const token = authToken && authToken.split(" ")[1];
 
   if(!token) {
-    return res.status(401).json({message: 'Access denied'});
-  };
+    return res.status(401).json({
+      stausCode: "401",
+      message: "Acesso não autorizado."
+    })
+  }
 
   try {
     jwt.verify(token, secret);
