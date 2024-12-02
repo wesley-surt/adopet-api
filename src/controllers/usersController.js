@@ -15,13 +15,14 @@ class UsersController {
         validateField(password, `Password is required - ${password}`, res);
 
         let passwordValidit = false;
-
         const user = await users.findOne({ email: email });
+
         if (user) {
+
             passwordValidit = await bcrypt.compare(password, user.password)
-            
             if(!passwordValidit)
                 res.status(400).json({Error: "Incorrect password"});
+
         } else {
             res.status(400).json({Error: "User not found"});
         };
@@ -34,6 +35,7 @@ class UsersController {
                     },
                     secret
                 );
+
                 if (user) {
                     res.status(200).json({ token, userId });
                     return next();
@@ -41,13 +43,15 @@ class UsersController {
 
                 res.status(500).json({ message: "User not find." });
                 return next();
+
             } catch (err) {
                 res.status(500).json({ message: "Server error. Try again later" });
                 return next();
             }
         };
 
-    static register = async (req, res) => {
+    static register = async (req, res, next) => {
+        
         const {
             confirmPassword,
             telephone,
@@ -77,46 +81,55 @@ class UsersController {
             res
         );
 
-        const userExists = await users
+        await users
             .findOne({ email: email })
-            .then(
-                res.status(400).json({
-                    Email_exists: "ERROR: Please, use another email",
-                })
-            )
+            .then( async (response) => {
+                if (response !== null && response !== undefined) {
+
+                    res.status(400).json({
+                        Email_exists: "ERROR: Please, use another email",
+                    });
+                    next();
+
+                }
+                else {
+
+                    const salt = await bcrypt.genSalt(12);
+                    const passwordHash = await bcrypt.hash(password, salt);
+                    const user = new users({
+                        password: passwordHash,
+                        telephone,
+                        imAnNGO,
+                        about,
+                        email,
+                        state,
+                        photo,
+                        name,
+                        city,
+                        cep,
+                    });
+            
+                    try {
+            
+                        const result = await user.save();
+                        if (result) return res.status(200).json(result);
+                        else throw new Error(err);
+            
+                    } catch (err) {
+                        res.status(500).json({ error: err.message });
+                        next();
+                    }
+                }
+            })
             .catch((err) => {
                 res.status(500).json({
                     error: err.message
                 });
             });
-
-        const salt = await bcrypt.genSalt(12);
-        const passwordHash = await bcrypt.hash(password, salt);
-
-        const user = new users({
-            password: passwordHash,
-            telephone,
-            imAnNGO,
-            about,
-            email,
-            state,
-            photo,
-            name,
-            city,
-            cep,
-        });
-
-        try {
-            const result = await user.save();
-
-            if (result) return res.status(200).json(result);
-            else throw new Error(err);
-        } catch (err) {
-            res.status(500).json({ error: err.message });
-        }
     };
 
     static update = async (req, res) => {
+
         const { user, id } = req.body;
         const { photo, name, city, about, telephone, state, cep } = user;
 
@@ -134,6 +147,7 @@ class UsersController {
                 },
                 { new: true, select: "-password" },
                 (err, user) => {
+
                     if (err) {
                         throw new Error(err.message);
                     } else res.status(200).json(user);
@@ -158,17 +172,21 @@ class UsersController {
     };
 
     static exists = async (req, res, next) => {
+
         const { email } = req.body;
         validateField(email, "Email is required", res);
-
         const user = await users.findOne({ email: email });
 
         if (user) {
+
             res.status(200).json({ exists: true });
             return next();
+
         } else {
+
             res.status(404).json({});
             return next();
+            
         }
     };
 

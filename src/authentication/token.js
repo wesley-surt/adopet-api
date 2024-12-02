@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import { environment } from '../../environment/env.js';
-
 const secret = environment.SECRET_KEY ;
 
 export default function checkToken (req, res, next) {
