@@ -69,7 +69,7 @@ class UsersController {
         validateField(email, `Email is required - ${email}`, res);
         validateField(name, `ERROR: Name is required - ${name}`, res);
         validateField(cep, `ERROR: Cep is required - ${name}`, res);
-        validateField(imAnNGO, `ERROR: "Im an NGO" is required - ${name}`, res);
+        validateField(imAnNGO, `ERROR: Im an NGO is required - ${name}`, res);
         validateField(
             password,
             `ERROR: Password is required - ${password}`,
