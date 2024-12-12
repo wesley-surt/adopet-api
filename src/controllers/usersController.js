@@ -14,18 +14,22 @@ class UsersController {
         validateField(email, `Email is required - ${email}`, res);
         validateField(password, `Password is required - ${password}`, res);
 
-        let passwordValidit = false;
-        const user = await users.findOne({ email: email });
+        await users.findOne({ email: email }).then( async (user) => {
+            let passwordValidit = false;
+            if (user != null && user != undefined) {
 
-        if (user) {
-
-            passwordValidit = await bcrypt.compare(password, user.password)
-            if(!passwordValidit)
-                res.status(400).json({Error: "Incorrect password"});
-
-        } else {
-            res.status(400).json({Error: "User not found"});
-        };
+                passwordValidit = await bcrypt.compare(password, user.password)
+                if(!passwordValidit) {
+                    res.status(400).json({Error: "Incorrect password"});
+                    next();
+                    return;
+                }
+    
+            } else {
+                res.status(400).json({Error: "User not found"});
+                next();
+                return;
+            };
 
             try {
                 const userId = user._id;
@@ -35,20 +39,29 @@ class UsersController {
                     },
                     secret
                 );
-
+    
                 if (user) {
                     res.status(200).json({ token, userId });
-                    return next();
+                    next();
+                    return;
                 }
-
+    
                 res.status(500).json({ message: "User not find." });
-                return next();
-
+                next();
+                return;
+    
             } catch (err) {
-                res.status(500).json({ message: "Server error. Try again later" });
-                return next();
+                res.status(500).json({ message: "Server error. Try again later dentro" });
+                next();
+                return;
             }
-        };
+
+        }).catch(err => {
+            res.status(500).json({Error: "Server error. Try agin leter fora"});
+            next();
+            return;
+        });    
+    };
 
     static register = async (req, res, next) => {
         
@@ -131,7 +144,9 @@ class UsersController {
     static update = async (req, res) => {
 
         const { user, id } = req.body;
-        const { photo, name, city, about, telephone, state, cep } = user;
+        validateField(user, `User information is required - ${user}`, res);
+        validateField(id, `User id is required - ${id}`, res);
+        const { photo, name, city, about, telephone, state, cep, email } = user;
 
         try {
             users.findByIdAndUpdate(
@@ -141,16 +156,25 @@ class UsersController {
                     about,
                     state,
                     photo,
+                    email,
                     city,
                     name,
                     cep,
                 },
                 { new: true, select: "-password" },
                 (err, user) => {
+                    if (err) throw new Error(err.message);
 
-                    if (err) {
-                        throw new Error(err.message);
-                    } else res.status(200).json(user);
+                    if (user != null && user != undefined && user) {
+                        res.status(200).json(user);
+                        next();
+                        return;
+
+                    } else {
+                        res.status(400).json({Error: "User not found. Check if the ID is correct and try again"});
+                        next();
+                        return;
+                    };
                 }
             );
         } catch (err) {
@@ -163,10 +187,23 @@ class UsersController {
 
         await users
             .findById(id, "-password")
-            .then((user) => res.status(200).json(user))
+            .then((user) => {
+                if (user != null && user != undefined && user) {
+                    res.status(200).json(user);
+                    next();
+                    return;
+
+                } else {
+                    res.status(404).json({
+                        message: "User not found. Check if the ID is correct and try again"
+                    });
+                    next();
+                    return;
+                }
+            })
             .catch((err) => {
-                res.status(404).json({
-                    message: "User not found. " + err.message,
+                res.status(500).json({
+                    Error: "Error: there was an error on the server." + err.message,
                 });
             });
     };
