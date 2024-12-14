@@ -22,11 +22,14 @@ export class AnimalsController {
         try {
 
             const { id } = req.params;
-            const animal = await animals.findById(id);
-
-            if (animal) {
-                res.status(200).json(animal);
-            }
+            await animals.findById(id)
+                .then(animal => {
+                    if (animal != null && animal != undefined && animal.length != 0)
+                        res.status(200).json(animal);
+                    else {
+                        res.status(400).json({ Error: "No animal belonging to the provided user id were found. Verify that the user id is correct and try again." });
+                    };
+                });
 
         } catch (err) {
 
@@ -38,13 +41,17 @@ export class AnimalsController {
     };
 
     static exist = async (req, res) => {
-
         try {
-
             const { profileId } = req.params;
             await animals
-                .find("profileId", profileId)
-                .then((animal) => res.status(200).json(animal))
+                .find({ "profileId": profileId })
+                .then((animal) => {
+                    if (animal != null && animal != undefined && animal.length != 0)
+                        res.status(200).json({ exist: true });
+                    else {
+                        res.status(400).json({ Error: "No animal belonging to the provided user id were found. Verify that the user id is correct and try again." });
+                    };
+                })
                 .catch((err) => {
                     throw new Error(err.message);
                 });
@@ -59,7 +66,13 @@ export class AnimalsController {
         const { state } = req.query;
         animals
             .find({ state: state }, {})
-            .then((animals) => res.status(200).json(animals))
+            .then((animals) => {
+                if (animals != null && animals != undefined && animals.length != 0)
+                    res.status(200).json(animals);
+                else {
+                    res.status(400).json({ Error: "No animals belonging to the informed state were found. Verify that the state is correct and try again." });
+                };
+            })
             .catch((err) => res.status(500).json({ message: err }));
     };
 
@@ -68,12 +81,20 @@ export class AnimalsController {
         const { userId } = req.query;
         animals
             .find({ userId: userId }, {})
-            .then((animals) => res.status(200).json(animals))
+            .then((animals) => {
+                if (animals != null && animals != undefined && animals.length != 0)
+                    res.status(200).json(animals);
+                else {
+                    res.status(400).json({ Error: "No animals belonging to the provided user id were found. Verify that the user id is correct and try again." });
+                };
+            })
             .catch((err) => res.status(500).json({ message: err }));
     };
 
     static register = async (req, res) => {
         const { userId, animal } = req.body;
+        validateField(userId, "UserId is required", res);
+        validateField(animal, "Object animal is required", res);
         const {
             characteristics1,
             characteristics2,
@@ -138,22 +159,28 @@ export class AnimalsController {
         const { id } = req.params;
         animals
             .findByIdAndDelete(id)
-            .then((response) => res.status(200).json(response))
+            .then((animal) => {
+                if (animal != null && animal != undefined && animal.length != 0)
+                    res.status(200).json({ deleted: true });
+                else {
+                    res.status(400).json({ Error: "No animal belonging to the provided user id were found. Verify that the user id is correct and try again." });
+                };
+            })
             .catch((err) => res.status(500).json(err.message));
     };
 
     static deleteAll = async (req, res) => {
 
-        const { profileId } = req.query;
+        const { userId } = req.query;
         let idsRefined = [];
 
         await animals
-            .find({ profileId: profileId })
+            .find({ profileId: userId })
             .then((animals) => {
                 if (
-                    animals !== undefined &&
-                    animals !== null &&
-                    animals !== ""
+                    animals != undefined &&
+                    animals != null &&
+                    animals.length != 0
                 ) {
                     const regexToAnimalArray = new RegExp(
                         "_id:[a-zA-Z0-9]+,",
@@ -201,7 +228,13 @@ export class AnimalsController {
         const { animal, id } = req.body;
         animals
             .findByIdAndUpdate(id, animal)
-            .then((animalUpdated) => res.status(200).json(animalUpdated))
+            .then((animal) => {
+                if (animal != null && animal != undefined && animal.length != 0)
+                    res.status(200).json(animal);
+                else {
+                    res.status(400).json({ Error: "No animal belonging to the provided user id were found. Verify that the user id is correct and try again." });
+                };
+            })
             .catch((err) => res.status(500).json({ message: err.message }));
     };
 }
