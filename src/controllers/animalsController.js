@@ -85,7 +85,7 @@ export class AnimalsController {
                 if (animals != null && animals != undefined && animals.length != 0)
                     res.status(200).json(animals);
                 else {
-                    res.status(400).json({ Error: "No animals belonging to the provided user id were found. Verify that the user id is correct and try again." });
+                    res.status(200).json({ Error: "No animals belonging to the provided user id were found. Verify that the user id is correct and try again." });
                 };
             })
             .catch((err) => res.status(500).json({ message: err }));
@@ -98,8 +98,8 @@ export class AnimalsController {
         const {
             characteristics1,
             characteristics2,
-            measure,
-            status,
+            // measure,
+            // status,
             photo,
             about,
             state,
@@ -112,8 +112,8 @@ export class AnimalsController {
 
         validateField(characteristics1, "Characteristics1 is required", res);
         validateField(characteristics2, "Characteristics2 is required", res);
-        validateField(measure, "Measure is required", res);
-        validateField(status, "Status is required", res);
+        // validateField(measure, "Measure is required", res);
+        // validateField(status, "Status is required", res);
         validateField(userId, "UserId is required", res);
         validateField(photo, "Photo is required", res);
         validateField(state, "State is required", res);
@@ -126,8 +126,8 @@ export class AnimalsController {
         const animalToSave = new animals({
             characteristics1: characteristics1,
             characteristics2: characteristics2,
-            measure: measure,
-            status: status,
+           //  measure: measure,
+            // status: status,
             userId: userId,
             photo: photo,
             state: state,
@@ -139,19 +139,15 @@ export class AnimalsController {
             cep: cep,
         });
 
-        try {
-            await animalToSave
-                .save()
-                .then((animal) => res.status(200).json(animal))
-                .catch((err) => {
-                    throw new Error(err);
-                });
-
-        } catch (err) {
-            res.status(500).json({
-                message: err.message,
+        await animalToSave
+            .save()
+            .then((animal) => animal._id)
+            .then((animal) => {
+                animal._id
+                    ? res.status(200).json(animal)
+                    : res.status(500).json({ message: "Erro de processamento" });
+                return;
             });
-        }
     };
 
     static deleteOne = (req, res) => {

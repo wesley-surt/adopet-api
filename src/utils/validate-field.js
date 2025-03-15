@@ -1,10 +1,12 @@
-export const validateField = (field, message, res, next) => {
+export const validateField = (field, message, res) => {
     try {
         if (!field) {
             res.status(422).json({ message: message });
             return;
         }
-        return true;
+
+        return;
+        
     } catch (err) {
         console.log(err.message);
     }

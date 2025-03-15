@@ -81,8 +81,6 @@ class UsersController {
 
         validateField(email, `Email is required - ${email}`, res);
         validateField(name, `ERROR: Name is required - ${name}`, res);
-        validateField(cep, `ERROR: Cep is required - ${name}`, res);
-        validateField(imAnNGO, `ERROR: Im an NGO is required - ${name}`, res);
         validateField(
             password,
             `ERROR: Password is required - ${password}`,
@@ -141,7 +139,7 @@ class UsersController {
             });
     };
 
-    static update = async (req, res) => {
+    static update = async (req, res, next) => {
 
         const { user, id } = req.body;
         validateField(user, `User information is required - ${user}`, res);
@@ -190,14 +188,12 @@ class UsersController {
             .then((user) => {
                 if (user != null && user != undefined && user) {
                     res.status(200).json(user);
-                    next();
                     return;
 
                 } else {
                     res.status(404).json({
                         message: "User not found. Check if the ID is correct and try again"
                     });
-                    next();
                     return;
                 }
             })
