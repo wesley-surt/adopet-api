@@ -98,8 +98,7 @@ export class AnimalsController {
         const {
             characteristics1,
             characteristics2,
-            // measure,
-            // status,
+            measure,
             photo,
             about,
             state,
@@ -112,8 +111,7 @@ export class AnimalsController {
 
         validateField(characteristics1, "Characteristics1 is required", res);
         validateField(characteristics2, "Characteristics2 is required", res);
-        // validateField(measure, "Measure is required", res);
-        // validateField(status, "Status is required", res);
+        validateField(measure, "Measure is required", res);
         validateField(userId, "UserId is required", res);
         validateField(photo, "Photo is required", res);
         validateField(state, "State is required", res);
@@ -126,8 +124,7 @@ export class AnimalsController {
         const animalToSave = new animals({
             characteristics1: characteristics1,
             characteristics2: characteristics2,
-           //  measure: measure,
-            // status: status,
+            measure: measure,
             userId: userId,
             photo: photo,
             state: state,

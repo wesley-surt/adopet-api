@@ -13,10 +13,6 @@ const routes = (app) => {
         header: "authorization",
     };
 
-    app.get("/", (req, res) => {
-        res.status(200).send("welcome from server...");
-    });
-
     app.use(cors(), express.json(), userRoutes, animalsRoutes);
 };
 

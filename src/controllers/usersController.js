@@ -64,19 +64,12 @@ class UsersController {
     };
 
     static register = async (req, res, next) => {
-        
+
         const {
             confirmPassword,
-            telephone,
             password,
-            imAnNGO,
-            about,
-            state,
-            photo,
             email,
-            city,
             name,
-            cep,
         } = req.body;
 
         validateField(email, `Email is required - ${email}`, res);
@@ -104,27 +97,20 @@ class UsersController {
 
                 }
                 else {
-
+                    
                     const salt = await bcrypt.genSalt(12);
                     const passwordHash = await bcrypt.hash(password, salt);
                     const user = new users({
                         password: passwordHash,
-                        telephone,
-                        imAnNGO,
-                        about,
                         email,
-                        state,
-                        photo,
                         name,
-                        city,
-                        cep,
                     });
-            
+
                     try {
             
-                        const result = await user.save();
-                        if (result) return res.status(200).json(result);
-                        else throw new Error(err);
+                        await user.save()
+                            .then(result => res.status(200).json(result))
+                            .catch(err => { throw new Error(err) });
             
                     } catch (err) {
                         res.status(500).json({ error: err.message });
@@ -142,10 +128,11 @@ class UsersController {
     static update = async (req, res, next) => {
 
         const { user, id } = req.body;
+        
         validateField(user, `User information is required - ${user}`, res);
         validateField(id, `User id is required - ${id}`, res);
-        const { photo, name, city, about, telephone, state, cep, email } = user;
-
+        const { name, city, about, telephone, state, cep, email, photo} = user;
+        
         try {
             users.findByIdAndUpdate(
                 id,
