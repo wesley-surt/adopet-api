@@ -64,14 +64,16 @@ export class AnimalsController {
     static searchByState = async (req, res) => {
 
         const { state } = req.query;
+        
+        if (!state) {
+            return res.status(400).json({ error: "Parâmetro 'state' é obrigatório" });
+        }
+
         animals
             .find({ state: state }, {})
             .then((animals) => {
-                if (animals != null && animals != undefined && animals.length != 0)
-                    res.status(200).json(animals);
-                else {
-                    res.status(400).json({ Error: "No animals belonging to the informed state were found. Verify that the state is correct and try again." });
-                };
+                res.status(200).json(animals);
+                return
             })
             .catch((err) => res.status(500).json({ message: err }));
     };
@@ -136,13 +138,13 @@ export class AnimalsController {
             cep: cep,
         });
 
-        await animalToSave
-            .save()
-            .then((animal) => animal._id)
-            .then((animal) => {
-                animal._id
-                    ? res.status(200).json(animal)
-                    : res.status(500).json({ message: "Erro de processamento" });
+        await animalToSave.save()
+            .then(animal => {
+                res.status(200).json(animal)
+                return;
+            })
+            .catch(err => {
+                res.status(500).json({ message: "Erro de processamento - " + err });
                 return;
             });
     };
