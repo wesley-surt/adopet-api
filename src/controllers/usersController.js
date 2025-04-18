@@ -15,10 +15,12 @@ class UsersController {
         validateField(password, `Password is required - ${password}`, res);
 
         await users.findOne({ email: email }).then( async (user) => {
+
             let passwordValidit = false;
             if (user != null && user != undefined) {
 
                 passwordValidit = await bcrypt.compare(password, user.password)
+
                 if(!passwordValidit) {
                     res.status(400).json({Error: "Incorrect password"});
                     next();
@@ -26,12 +28,14 @@ class UsersController {
                 }
     
             } else {
+
                 res.status(400).json({Error: "User not found"});
                 next();
                 return;
             };
 
             try {
+             
                 const userId = user._id;
                 const token = jwt.sign(
                     {
@@ -51,12 +55,14 @@ class UsersController {
                 return;
     
             } catch (err) {
+
                 res.status(500).json({ message: "Server error. Try again later dentro" });
                 next();
                 return;
             }
 
         }).catch(err => {
+
             res.status(500).json({Error: "Server error. Try agin leter fora"});
             next();
             return;
@@ -88,6 +94,7 @@ class UsersController {
         await users
             .findOne({ email: email })
             .then( async (response) => {
+                
                 if (response !== null && response !== undefined) {
 
                     res.status(400).json({
@@ -106,8 +113,7 @@ class UsersController {
                         name,
                     });
 
-                    try {
-            
+                    try {            
                         await user.save()
                             .then(result => res.status(200).json(result))
                             .catch(err => { throw new Error(err) });
@@ -119,6 +125,7 @@ class UsersController {
                 }
             })
             .catch((err) => {
+
                 res.status(500).json({
                     error: err.message
                 });
@@ -131,8 +138,8 @@ class UsersController {
         
         validateField(user, `User information is required - ${user}`, res);
         validateField(id, `User id is required - ${id}`, res);
-        const { name, city, about, telephone, state, cep, email, photo} = user;
         
+        const { name, city, about, telephone, state, cep, email, photo} = user;
         try {
             users.findByIdAndUpdate(
                 id,
@@ -151,11 +158,13 @@ class UsersController {
                     if (err) throw new Error(err.message);
 
                     if (user != null && user != undefined && user) {
+
                         res.status(200).json(user);
                         next();
                         return;
 
                     } else {
+
                         res.status(400).json({Error: "User not found. Check if the ID is correct and try again"});
                         next();
                         return;
@@ -168,19 +177,22 @@ class UsersController {
     };
 
     static return = async (req, res) => {
-        const id = req.params.id;
 
+        const id = req.params.id;
         await users
             .findById(id, "-password")
             .then((user) => {
+
                 if (user != null && user != undefined && user) {
                     res.status(200).json(user);
                     return;
 
                 } else {
+
                     res.status(404).json({
                         message: "User not found. Check if the ID is correct and try again"
                     });
+
                     return;
                 }
             })
@@ -215,8 +227,11 @@ class UsersController {
 
         await Animals.find({ userId: id }, {})
             .then((animals) => {
+                
                 if (animals.length > 0)
+
                     animals.forEach((a) => {
+
                         const id = a._id;
                         Animals.findByIdAndDelete(id)
                             .then()
@@ -233,8 +248,10 @@ class UsersController {
         await users
             .findByIdAndDelete(id)
             .then((response) => {
+
                 res.status(200).json(response);
                 return next();
+                
             })
             .catch((err) => {
                 res.status(500).json(err.message);

@@ -4,7 +4,7 @@ import { validateField } from "../utils/validate-field.js";
 export class AnimalsController {
     static getAllAnimals = async (req, res) => {
         try {
-
+ 
             const allAnimals = await animals.find();
             if (allAnimals) res.status(200).json(allAnimals);
 
@@ -24,6 +24,7 @@ export class AnimalsController {
             const { id } = req.params;
             await animals.findById(id)
                 .then(animal => {
+
                     if (animal != null && animal != undefined && animal.length != 0)
                         res.status(200).json(animal);
                     else {
@@ -41,11 +42,14 @@ export class AnimalsController {
     };
 
     static exist = async (req, res) => {
+
         try {
+
             const { profileId } = req.params;
             await animals
                 .find({ "profileId": profileId })
                 .then((animal) => {
+
                     if (animal != null && animal != undefined && animal.length != 0)
                         res.status(200).json({ exist: true });
                     else {
@@ -84,6 +88,7 @@ export class AnimalsController {
         animals
             .find({ userId: userId }, {})
             .then((animals) => {
+
                 if (animals != null && animals != undefined && animals.length != 0)
                     res.status(200).json(animals);
                 else {
@@ -94,9 +99,11 @@ export class AnimalsController {
     };
 
     static register = async (req, res) => {
+
         const { userId, animal } = req.body;
         validateField(userId, "UserId is required", res);
         validateField(animal, "Object animal is required", res);
+
         const {
             characteristics1,
             characteristics2,
@@ -155,6 +162,7 @@ export class AnimalsController {
         animals
             .findByIdAndDelete(id)
             .then((animal) => {
+
                 if (animal != null && animal != undefined && animal.length != 0)
                     res.status(200).json({ deleted: true });
                 else {
@@ -172,6 +180,7 @@ export class AnimalsController {
         await animals
             .find({ profileId: userId })
             .then((animals) => {
+
                 if (
                     animals != undefined &&
                     animals != null &&
@@ -224,6 +233,7 @@ export class AnimalsController {
         animals
             .findByIdAndUpdate(id, animal)
             .then((animal) => {
+                
                 if (animal != null && animal != undefined && animal.length != 0)
                     res.status(200).json(animal);
                 else {
