@@ -233,6 +233,11 @@ class UsersController {
                     animals.forEach((a) => {
 
                         const id = a._id;
+
+                        fetch(`http://localhost:4000/pictures/${a.photo}`, {
+                            method: 'DELETE',
+                        })
+
                         Animals.findByIdAndDelete(id)
                             .then()
                             .catch((err) => {
